@@ -13,14 +13,9 @@
      screen, nothing scrolls. The keyboard resizes the viewport
      instead of covering the page (see the viewport
      meta). */
-  html { height: 100%; -webkit-text-size-adjust: 100%; touch-action: none; }
+  html { height: 100%; -webkit-text-size-adjust: 100%; }
   body { margin: 0; height: 100%; overflow: hidden; overscroll-behavior: none;
-         touch-action: none;
-         /* No text selection, no callout, no tap flash: holding the
-            seal to breathe must never select letters. Fields (if a
-            page ever adds one) opt back in below. */
-         -webkit-user-select: none; user-select: none;
-         -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent;
+         touch-action: manipulation;
          background: #0a0a12; color: #e8eaf2;
          font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
   .wrap { margin: 0 auto; height: 100vh; height: 100dvh;
@@ -29,9 +24,6 @@
           position: relative; z-index: 1; }
   :root { --hue: rgb(120,170,255); --hue-soft: rgba(120,170,255,.38); --fill: rgb(217,138,43); --fill-soft: rgba(217,138,43,.19); --star: rgba(190,200,230,.5); }
   [hidden] { display: none !important; }
-  input, textarea, [contenteditable] { -webkit-user-select: text; user-select: text;
-                                        touch-action: auto; }
-  svg text, .voice-line, .gathered { pointer-events: none; }
   /* The alive layer: the throbber and its voice. The logo stands
      apart in its own header and never moves. */
   .alive { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
@@ -54,43 +46,24 @@
     0%, 100% { opacity: var(--tw, .3); }
     50% { opacity: 1; }
   }
-  /* The Milky Way: a soft diagonal band centered on the seal. Its
-     stars slide along the band (one half repeats, so the loop has no
-     seam) and the whole band sways slowly around the seal, as if the
-     galaxies were following a course with the seal at the middle.
-     Dark dust wisps ride with the stars; a few brighter stars twinkle.
-     Everything is dim: the sky stays behind the seal. */
-  .milkyway { position: absolute; left: 50%; top: 44%; width: 190vmax; height: 42vmin;
-              margin: -21vmin 0 0 -95vmax; transform: rotate(-24deg);
-              animation: mwSway 220s ease-in-out infinite alternate;
-              -webkit-mask-image: linear-gradient(to bottom, transparent, #000 32%, #000 68%, transparent);
-              mask-image: linear-gradient(to bottom, transparent, #000 32%, #000 68%, transparent); }
-  @keyframes mwSway { from { transform: rotate(-29deg); } to { transform: rotate(-19deg); } }
-  .mw-glow { position: absolute; inset: 0; opacity: .09;
-             background: linear-gradient(to bottom, transparent, var(--star) 50%, transparent); }
-  .mw-flow { position: absolute; top: 0; left: 0; height: 100%; width: 200%;
-             animation: mwFlow 260s linear infinite; will-change: transform; }
-  @keyframes mwFlow { from { transform: translateX(-50%); } to { transform: translateX(0); } }
-  .mw-half { position: absolute; top: 0; height: 100%; width: 50%; }
-  .milky-star { position: absolute; border-radius: 50%; background: var(--star); }
-  .milky-glint { animation: starTwinkle 4s ease-in-out infinite;
-                 box-shadow: 0 0 5px 1px var(--star); }
-  .mw-dust { position: absolute; border-radius: 50%;
-             background: radial-gradient(ellipse, rgba(8,8,16,.62) 0%, rgba(8,8,16,.28) 45%, rgba(8,8,16,0) 72%); }
-  /* Nebulas: three layered clouds, one high, one middle, one low,
-     all drifting along the same diagonal as the galaxy. */
-  .nebula { position: absolute; will-change: transform, opacity;
-            animation: nebulaDrift 150s linear infinite; }
-  .neb-body { position: absolute; inset: 0; animation: nebBreath 18s ease-in-out infinite alternate; }
+  .milkyway { position: absolute; left: -20%; top: 18%; width: 140%;
+              height: 44vmin; transform: rotate(-24deg); }
+  .milky-star { position: absolute; border-radius: 50%;
+                background: var(--star); }
+  .nebula { position: absolute; border-radius: 50%;
+            animation: nebulaDrift 150s linear infinite;
+            will-change: transform, opacity; }
   @keyframes nebulaDrift {
-    0% { transform: translate(-40vw, var(--ny0, 25vh)); opacity: 0; }
-    28% { opacity: var(--neb-op, .5); }
-    60% { opacity: var(--neb-op, .5); }
-    100% { transform: translate(110vw, var(--ny1, -18vh)); opacity: 0; }
+    0% { transform: translate(-35vw, 25vh); opacity: 0; }
+    30% { opacity: var(--neb-op, .5); }
+    55% { opacity: var(--neb-op, .5); }
+    100% { transform: translate(105vw, -18vh); opacity: 0; }
   }
-  @keyframes nebBreath { from { transform: scale(.94); } to { transform: scale(1.08); } }
-  @media (prefers-reduced-motion: reduce) {
-    .milkyway, .mw-flow, .nebula, .neb-body, .haze, .milky-glint { animation: none; }
+  @keyframes nebulaDriftB {
+    0% { transform: translate(105vw, 20vh); opacity: 0; }
+    30% { opacity: var(--neb-op, .5); }
+    55% { opacity: var(--neb-op, .5); }
+    100% { transform: translate(-35vw, -15vh); opacity: 0; }
   }
   .haze { position: absolute; border-radius: 50%;
           animation: hazeDrift 280s linear infinite;
@@ -106,13 +79,7 @@
      while the server answers, and turns steady orange when the
      server misses two polls. No wave, no glint: the logo never
      moves, and the emblem owns the screen. */
-  /* The banner: one slim line across the top, hairlines fading out to
-     either side, the wordmark small and dull in the middle. */
-  header.masthead { display: flex; align-items: center; justify-content: center;
-                    gap: 2.4vmin; position: relative; padding: .4vmin 0 1.2vmin; }
-  header.masthead::before, header.masthead::after { content: ""; flex: 1 1 0; height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(143,151,173,.26)); }
-  header.masthead::after { background: linear-gradient(270deg, transparent, rgba(143,151,173,.26)); }
+  header.masthead { display: flex; align-items: flex-start; gap: 10px; position: relative; }
   .vbtn { flex: none; margin-top: 0.4em; padding: 6px 10px; border: 1px solid #3a3f58;
           border-radius: 8px; background: none; color: #8a93a8; font: inherit;
           font-size: 13px; cursor: pointer; }
@@ -121,17 +88,16 @@
      rainbow, no roll, no glint: the emblem owns the screen and
      the logo never moves. The only color change is phase-down,
      the steady orange that says the portal is unreachable. */
-  .logo { margin: 0; flex: 0 0 auto; font-size: 2.7vmin; font-weight: 600;
-          letter-spacing: .32em; text-transform: uppercase; white-space: nowrap;
-          line-height: 1.6; text-align: center;
-          color: #7a8297; text-shadow: 0 0 .5em rgba(223, 228, 240, .14); }
-  .logo-a, .logo-b { display: inline-block; }
-  .logo-a { margin-right: .9em; }
-  .logo-b { margin-right: -.32em; }
+  .logo { margin: 0 0 0 auto; flex: 0 0 auto; font-size: 4.0vmin; font-weight: 700;
+          letter-spacing: 0.22em; line-height: 1.4; text-align: right;
+          color: #dfe4f0; text-shadow: 0 0 .35em rgba(223, 228, 240, .35); }
+  .logo-a, .logo-b { display: block; }
+  .logo-a { padding-right: 1.4em; }
+  .logo-b { margin-right: -0.22em; }
   /* While a build runs the base dims gray, so the bar reads
      from the first second. Phase-down orange still wins:
      this rule sits before it, at the same weight. */
-  .logo.filling { color: #667086; }
+  .logo.filling { color: #8f97ad; }
   .logo.phase-down { color: #ff6a2a;
                      text-shadow: 0 0 .5em rgba(255, 106, 42, .5); }
   /* The logo IS the progress bar. The wordmark fills left to
@@ -150,31 +116,26 @@
   .logo-fill { position: absolute; inset: 0; overflow: hidden;
                pointer-events: none; color: var(--fill);
                text-shadow: 0 0 .35em var(--fill-soft);
-               opacity: .24; transform-origin: 50% 50%;
+               opacity: .3;
                clip-path: inset(0 100% 0 0);
                transition: clip-path 1s linear; }
-  .logo-fill .logolink { display: inline-block; }
-  /* Finished: a soft sheen sweeps across the wordmark in the
-     genome's own journey color (--fill-done, stepped from JS). */
-  .logo-fill.done { opacity: .46;
-                    filter: drop-shadow(0 0 .4em var(--fill-done-soft, var(--fill-soft))); }
-  .logo-fill.done .logolink {
-    background: linear-gradient(105deg,
-      var(--fill-done, var(--fill)) 0%, var(--fill-done, var(--fill)) 38%,
-      #f4f7ff 50%,
-      var(--fill-done, var(--fill)) 62%, var(--fill-done, var(--fill)) 100%);
-    background-size: 260% 100%;
-    -webkit-background-clip: text; background-clip: text;
-    -webkit-text-fill-color: transparent; color: transparent; text-shadow: none;
-    animation: logoSheen 5.5s ease-in-out infinite; }
-  @keyframes logoSheen { 0% { background-position: 130% 0; } 60%, 100% { background-position: -30% 0; } }
-  /* The pop at the finish: a quick swell, a flash of light, settle. */
-  .logo-fill.poof { animation: logoPop .9s cubic-bezier(.2,.8,.2,1) 1; }
-  @keyframes logoPop {
-    0%   { transform: scale(1); filter: brightness(1); }
-    28%  { transform: scale(1.12); filter: brightness(2.2)
-             drop-shadow(0 0 .8em var(--fill-done, var(--fill))); }
-    100% { transform: scale(1); filter: brightness(1); }
+  .logo-fill.done { animation: logoShimmer 6s linear infinite; opacity: .5; }
+  .logo-fill.poof { animation: logoPoof .6s ease-out 1; }
+  /* The finished wordmark travels the person's own palette:
+     while done, the fill reads --fill-done, which the done
+     cycle steps through the genome's journey. No cycle, no
+     var, and the fill falls back to the picked color. */
+  .logo-fill.done { color: var(--fill-done, var(--fill));
+                    text-shadow: 0 0 .35em var(--fill-done-soft, var(--fill-soft)); }
+  @keyframes logoPoof {
+    0% { filter: brightness(1); }
+    35% { filter: brightness(1.9); }
+    100% { filter: brightness(1); }
+  }
+  @keyframes logoShimmer {
+    0% { filter: brightness(1); }
+    50% { filter: brightness(1.35); }
+    100% { filter: brightness(1); }
   }
 
   /* The emblem: centered, taking the room between the logo and
@@ -229,8 +190,6 @@
      does (--clar is driven from JS). */
   body.look2 .voice-line { opacity: calc(.6 + .4 * var(--clar, 1)); }
   body.look2 .voice-line:not(.out) .w { animation-name: resolve2; animation-duration: 2.8s; }
-  /* Look 2 never prints the beat: the words fly in and wrap the ring. */
-  body.look2 .voice-line .w { display: none; }
   @keyframes resolve2 {
     0%   { opacity: 0; filter: blur(1.8vmin); transform: translateY(.3em) scale(1.15);
            letter-spacing: .18em; color: #9fb0d8; }
@@ -362,6 +321,7 @@
     return f[i][1];
   }
   window.PsychSealReplay = function () { t0 = performance.now(); };
+  window.PsychSealSeekEnd = function () { var f = S.frames; t0 = performance.now() - f[f.length - 1][0] * 1000; };
   var real = window.fetch ? window.fetch.bind(window) : null;
   function reply(o, code) {
     return Promise.resolve(new Response(JSON.stringify(o),
@@ -884,16 +844,74 @@
   // switching tabs never reloads it.
   window.name = "psycharch-studio";
 
-  // The logo goes back to the dev portal. A tab opened by script
-  // closes, which drops the user back on the tab that opened it.
-  // A tab the browser will not let a script close (one opened from
-  // outside the page, by an intent or a typed address) is still
-  // here a beat later, so it turns itself into the dev portal
-  // instead. Either way the studio is gone and no new tab opens.
-  $("logoLink").addEventListener("click", function (ev) {
+  // The logo opens the options. Mute flips the voice, Rewind
+  // jumps to the beginning and Fast-forward to the end, each
+  // in one pop, and Close does what the logo used to do on its
+  // own: a tab opened by script closes, which drops the user
+  // back on the tab that opened it, and a tab the browser will
+  // not let a script close turns itself into the dev portal
+  // instead. Rewind and Fast-forward only show where a replay
+  // exists. Tapping anywhere else closes the menu.
+  var logoMenu = null, logoMenuOpen = false;
+  function logoMenuClose() {
+    if (logoMenu) logoMenu.style.display = "none";
+    logoMenuOpen = false;
+  }
+  function logoMenuBuild() {
+    var m = document.createElement("div");
+    m.id = "logo-menu";
+    m.style.cssText = "position:fixed;z-index:60;display:flex;flex-direction:column;gap:8px;";
+    function opt(label, fn) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = label;
+      b.style.cssText = "padding:8px 14px;border-radius:21px;border:1px solid #2c3246;background:#0f1120cc;" +
+        "color:#9aa6c8;font:inherit;font-size:14px;cursor:pointer;text-align:left;";
+      b.addEventListener("click", function (ev) {
+        ev.stopPropagation();
+        logoMenuClose();
+        fn();
+      });
+      m.appendChild(b);
+      return b;
+    }
+    var muteBtn = opt("Mute", function () {
+      voiceMuted = !voiceMuted;
+      try { localStorage.setItem("psycharch-muted", voiceMuted ? "1" : "0"); } catch (e) {}
+      if (voiceMuted) stopSpeech();
+    });
+    muteBtn.setAttribute("data-opt", "mute");
+    if (window.PsychSealReplay) {
+      opt("Rewind", function () { window.PsychSealReplay(); }).setAttribute("data-opt", "rewind");
+    }
+    if (window.PsychSealSeekEnd) {
+      opt("Fast-forward", function () { window.PsychSealSeekEnd(); }).setAttribute("data-opt", "ff");
+    }
+    opt("Close", function () {
+      window.close();
+      setTimeout(function () { location.href = "/"; }, 60);
+    }).setAttribute("data-opt", "close");
+    document.body.appendChild(m);
+    m.style.display = "none";
+    logoMenu = m;
+    return m;
+  }
+  function logoMenuToggle(ev) {
     ev.preventDefault();
-    window.close();
-    setTimeout(function () { location.href = "/"; }, 60);
+    ev.stopPropagation();
+    if (logoMenuOpen) { logoMenuClose(); return; }
+    var m = logoMenu || logoMenuBuild();
+    var muteBtn = m.querySelector('[data-opt="mute"]');
+    if (muteBtn) muteBtn.textContent = voiceMuted ? "Unmute" : "Mute";
+    var r = $("logoLink").getBoundingClientRect();
+    m.style.top = (r.bottom + 8) + "px";
+    m.style.right = Math.max(8, window.innerWidth - r.right) + "px";
+    m.style.display = "flex";
+    logoMenuOpen = true;
+  }
+  $("logoLink").addEventListener("click", logoMenuToggle);
+  document.addEventListener("click", function (ev) {
+    if (logoMenuOpen && logoMenu && !logoMenu.contains(ev.target)) logoMenuClose();
   });
 
   // The look version. A seed is a fingerprint, so what a seed draws
@@ -1156,105 +1174,49 @@
       el.style.animationDelay = (-(rand() * dur)).toFixed(2) + "s";
       sky.appendChild(el);
     }
-    // The Milky Way: a soft diagonal band centered on the seal. One half
-    // is built (stars, a few twinkling glints, dark dust wisps) and
-    // repeated, so the flow along the band loops without a seam.
+    // The Milky Way: a still diagonal band of faint stars,
+    // dense at its middle. It does not drift; the sky
+    // travels past it.
     var band = document.createElement("div");
     band.className = "milkyway";
-    var glow = document.createElement("div");
-    glow.className = "mw-glow";
-    band.appendChild(glow);
-    var flow = document.createElement("div");
-    flow.className = "mw-flow";
-    var half = document.createElement("div");
-    half.className = "mw-half";
     var br = prng(hashSeed("milkyway|" + key));
-    var m, st;
-    for (m = 0; m < 150; m++) {
-      st = document.createElement("span");
+    for (var m = 0; m < 140; m++) {
+      var st = document.createElement("span");
       st.className = "milky-star";
       var g = (br() + br() + br()) / 3;
       st.style.left = (br() * 100).toFixed(2) + "%";
-      st.style.top = (10 + g * 80).toFixed(2) + "%";
+      st.style.top = (12 + g * 76).toFixed(2) + "%";
       var mpx = br() < 0.8 ? 1 : 2;
       st.style.width = mpx + "px";
       st.style.height = mpx + "px";
-      st.style.opacity = (0.1 + br() * 0.32).toFixed(2);
-      half.appendChild(st);
+      st.style.opacity = (0.1 + br() * 0.35).toFixed(2);
+      band.appendChild(st);
     }
-    for (m = 0; m < 26; m++) {
-      st = document.createElement("span");
-      st.className = "milky-star milky-glint";
-      st.style.left = (br() * 100).toFixed(2) + "%";
-      st.style.top = (22 + ((br() + br()) / 2) * 56).toFixed(2) + "%";
-      st.style.width = "2px";
-      st.style.height = "2px";
-      var gd = 3 + br() * 4;
-      st.style.setProperty("--tw", (0.08 + br() * 0.25).toFixed(2));
-      st.style.animationDuration = gd.toFixed(2) + "s";
-      st.style.animationDelay = (-(br() * gd)).toFixed(2) + "s";
-      half.appendChild(st);
-    }
-    for (m = 0; m < 7; m++) {
-      var dust = document.createElement("div");
-      dust.className = "mw-dust";
-      dust.style.left = (br() * 92).toFixed(1) + "%";
-      dust.style.top = (22 + br() * 38).toFixed(1) + "%";
-      dust.style.width = (10 + br() * 14).toFixed(1) + "%";
-      dust.style.height = (16 + br() * 26).toFixed(1) + "%";
-      dust.style.transform = "rotate(" + ((br() * 60) - 30).toFixed(0) + "deg)";
-      half.appendChild(dust);
-    }
-    var half2 = half.cloneNode(true);
-    half.style.left = "0";
-    half2.style.left = "50%";
-    flow.appendChild(half);
-    flow.appendChild(half2);
-    band.appendChild(flow);
     sky.appendChild(band);
-    // Nebulas: three layered clouds, one high, one middle, one LOW, so
-    // the bottom of the screen has its share. Each is a few overlapping
-    // lobes, a hot core and a dark dust lane. All drift along the
-    // galaxy's own diagonal. Colors come from the genome's journey when
-    // one has landed, else soft fixed tints.
+    // Nebulas: a few soft colored clouds drifting slowly
+    // by, never all at once. Their colors come from the
+    // genome's own journey when one has landed, else soft
+    // fixed tints.
     var fixed = ["139,92,246", "52,211,153", "217,138,43", "56,189,248"];
     var nr = prng(hashSeed("nebula|" + key));
-    function nebCol() {
-      if (PAL && PAL.journey && PAL.journey.length > 1) return anchorAt(PAL.journey, nr());
-      return fixed[Math.floor(nr() * fixed.length)].split(",").map(Number);
-    }
-    function mix(c, t) {
-      return [Math.round(c[0] + (255 - c[0]) * t), Math.round(c[1] + (255 - c[1]) * t),
-              Math.round(c[2] + (255 - c[2]) * t)].join(",");
-    }
-    var slots = [[6, 24], [36, 20], [66, 22]];
-    for (var n = 0; n < 3; n++) {
-      var c1 = nebCol(), c2 = nebCol();
-      var c1s = c1.join(","), c2s = c2.join(","), c3s = mix(c1, 0.55);
+    for (var n = 0; n < 4; n++) {
       var neb = document.createElement("div");
       neb.className = "nebula";
-      var nh = 24 + nr() * 12;
-      neb.style.width = (nh * (1.45 + nr() * 0.4)).toFixed(1) + "vmin";
-      neb.style.height = nh.toFixed(1) + "vmin";
+      var nc = (PAL && PAL.journey && PAL.journey.length > 1)
+        ? anchorAt(PAL.journey, nr()).join(",")
+        : fixed[Math.floor(nr() * fixed.length)];
+      var nsize = 16 + nr() * 16;
+      neb.style.width = nsize.toFixed(1) + "vmin";
+      neb.style.height = nsize.toFixed(1) + "vmin";
       neb.style.left = "0";
-      neb.style.top = (slots[n][0] + nr() * slots[n][1]).toFixed(1) + "%";
-      neb.style.setProperty("--ny0", (6 + nr() * 10).toFixed(0) + "vh");
-      neb.style.setProperty("--ny1", (-(6 + nr() * 12)).toFixed(0) + "vh");
-      var body = document.createElement("div");
-      body.className = "neb-body";
-      body.style.transform = "rotate(" + ((nr() * 50) - 35).toFixed(0) + "deg)";
-      body.style.background =
-        "radial-gradient(ellipse 55% 42% at 36% 46%, rgba(" + c1s + ",.34) 0%, rgba(" + c1s + ",.12) 45%, rgba(" + c1s + ",0) 72%)," +
-        "radial-gradient(ellipse 42% 50% at 67% 56%, rgba(" + c2s + ",.28) 0%, rgba(" + c2s + ",.09) 48%, rgba(" + c2s + ",0) 74%)," +
-        "radial-gradient(ellipse 22% 20% at 47% 43%, rgba(" + c3s + ",.30) 0%, rgba(" + c3s + ",0) 100%)," +
-        "radial-gradient(ellipse 62% 7% at 50% 53%, rgba(8,8,16,.42) 0%, rgba(8,8,16,0) 100%)";
-      body.style.animationDuration = (14 + nr() * 10).toFixed(1) + "s";
-      body.style.animationDelay = (-(nr() * 14)).toFixed(1) + "s";
-      neb.appendChild(body);
-      neb.style.setProperty("--neb-op", (0.42 + nr() * 0.2).toFixed(2));
+      neb.style.top = (8 + nr() * 60).toFixed(1) + "%";
+      neb.style.background =
+        "radial-gradient(circle, rgba(" + nc + ",.38) 0%, rgba(" + nc + ",.11) 55%, rgba(" + nc + ",0) 75%)";
+      neb.style.setProperty("--neb-op", (0.35 + nr() * 0.25).toFixed(2));
       var ndur = 130 + nr() * 70;
       neb.style.animationDuration = ndur.toFixed(1) + "s";
       neb.style.animationDelay = (-(nr() * ndur)).toFixed(1) + "s";
+      if (nr() < 0.5) neb.style.animationName = "nebulaDriftB";
       sky.appendChild(neb);
     }
     // Haze: gray sci-fi wisps, wide and thin, slower than
@@ -1308,9 +1270,9 @@
   // The hand, live: the seal's hand, on the studio page. The
   // seal page skips this and runs its own _HAND (seal.py), so
   // a seal's behavior never changes. A finger aims the gaze,
-  // a hold inhales, letting go exhales, a double-tap replays
-  // where a replay exists, and a tilted phone leans the
-  // gaze. Two more gestures ride beside the hand, on every
+  // a hold inhales, letting go exhales, and a tilted phone
+  // leans the gaze. The logo opens the options. Two more
+  // gestures ride beside the hand, on every
   // page including seals: a horizontal swipe flips the face
   // like a coin, and a pinch spreads the face in or draws it
   // out. Both snap back: the flip lands facing forward and
@@ -1357,7 +1319,7 @@
     if (document.getElementById("psycharch-seal")) return;
     var PS = window.PsychSeal;
     if (!PS) return;
-    var down = false, lastTap = 0, gyro = false, holdT = null;
+    var down = false, gyro = false, holdT = null;
     function norm(e) {
       var w = window.innerWidth, h = window.innerHeight;
       return [(e.clientX - w / 2) / (w / 2), (e.clientY - h * 0.42) / (h * 0.3)];
@@ -1384,9 +1346,6 @@
     document.addEventListener("pointerdown", function (e) {
       if (handPinching) return;
       down = true; var n = norm(e); PS.aim(n[0], n[1], 1e9); inhaleSoon();
-      var now = Date.now();
-      if (now - lastTap < 320 && window.PsychSealReplay) window.PsychSealReplay();
-      lastTap = now;
       startGyro();
     });
     document.addEventListener("pointermove", function (e) {
@@ -1399,38 +1358,7 @@
     document.addEventListener("pointerup", up);
     document.addEventListener("pointercancel", up);
   }
-  // Take the page away from the browser: no page zoom (pinch, ctrl+wheel,
-  // double-tap), no text selection, no long-press callout. The seal's own
-  // pinch and hold (below) are the only gestures left.
-  function lockGestures() {
-    var opt = {passive: false};
-    function stop(e) { e.preventDefault(); }
-    ["gesturestart", "gesturechange", "gestureend"].forEach(function (n) {
-      document.addEventListener(n, stop, opt);
-    });
-    function multi(e) { if (e.touches && e.touches.length > 1) e.preventDefault(); }
-    document.addEventListener("touchstart", multi, opt);
-    document.addEventListener("touchmove", multi, opt);
-    var lastEnd = 0;
-    document.addEventListener("touchend", function (e) {
-      var n = Date.now();
-      if (n - lastEnd < 350) e.preventDefault();   // double-tap zoom
-      lastEnd = n;
-    }, opt);
-    window.addEventListener("wheel", function (e) { if (e.ctrlKey) e.preventDefault(); }, opt);
-    function inField(t) {
-      var el = t && t.nodeType === 3 ? t.parentElement : t;
-      return !!(el && el.closest && el.closest("input,textarea,[contenteditable]"));
-    }
-    document.addEventListener("selectstart", function (e) { if (!inField(e.target)) e.preventDefault(); });
-    var coarse = window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
-    document.addEventListener("contextmenu", function (e) {
-      if (coarse && !inField(e.target)) e.preventDefault();   // long-press menu
-    });
-    document.addEventListener("dragstart", stop);
-  }
   function wireGestures() {
-    lockGestures();
     var pts = {}, nPts = 0, pinch = null, swipe = null;
     function dist(a, b) {
       var dx = a.x - b.x, dy = a.y - b.y;
@@ -2455,12 +2383,7 @@
   function paintRing(now, cFx) {
     if (LOOK < 2) return;
     ringAlphaNow = 0.35 + 0.65 * Math.pow(cFx, 3);
-    var sk = clamp((now - ringSettleT0) / RING_SETTLE_MS), se = sk * sk * (3 - 2 * sk);
-    ringGroup.setAttribute("opacity", (ringAlphaNow * se).toFixed(3));
-    if (ringGhost) {
-      if (sk >= 1) { if (ringGhost.parentNode) ringGhost.parentNode.removeChild(ringGhost); ringGhost = null; }
-      else ringGhost.setAttribute("opacity", (ringAlphaNow * (1 - se)).toFixed(3));
-    }
+    ringGroup.setAttribute("opacity", ringAlphaNow.toFixed(3));
     var bl = Math.round((1 - cFx) * 16) / 10;
     ringMistNow = bl;
     if (bl !== lastMist) {
@@ -3357,7 +3280,7 @@
         if (logoPoofT) clearTimeout(logoPoofT);
         logoPoofT = setTimeout(function () {
           fill.classList.remove("poof");
-        }, 950);
+        }, 650);
         doneCycleStart();
       } else {
         fill.classList.remove("done");
@@ -3377,6 +3300,7 @@
   // three dots breathe; between beats the space stands empty.
   var voiceTok = 0, voiceText = "";
   var voiceBeat = null, voiceTimer = null, voiceWaiting = false, voiceMuted = false;
+  try { voiceMuted = localStorage.getItem("psycharch-muted") === "1"; } catch (e) {}
   // The words type at the speech pace, one word at a time, so the
   // screen and the spoken voice stay together. The replay plan
   // holds normal speed for the spread either side of each
@@ -3401,9 +3325,7 @@
   // of printing too small to read, and past the floor the
   // last beat tails off with an ellipsis rather than overflowing.
   var ART_SCALE = 0.78;
-  var RING_RADII = [156, 175, 194];
-  var RING_EVEN_MAX = 11.5, RING_SETTLE_MS = 900;
-  var RING_EVEN_FORCE = false, ringEvenBeats = -1, ringGhost = null, ringSettleT0 = -1e9;
+  var RING_RADII = [156, 180];
   var RING_FONT_START = 11, RING_FONT_FLOOR = 7.5;
   var RING_GAP_EM = 0.35, RING_BEAT_GAP_EM = 0.9;
   var RING_SENTENCE_GAP_EM = 0.6;
@@ -3412,8 +3334,8 @@
   // The ring's fills: look 1 keeps the old pair exactly. Look 2
   // dims both a fifth, so the record sits at the medallion's own
   // low brightness, the outer ring dimmer than the inner.
-  var RING_FILLS = LOOK < 2 ? ["#8a93a8", "#6a7288", "#4e5568"] : ["#6e7686", "#505867", "#3a404e"];
-  var RING_RGB = LOOK < 2 ? [[138, 147, 168], [106, 114, 136], [78, 85, 104]] : [[110, 118, 134], [80, 88, 103], [58, 64, 78]], RING_BRIGHT = [226, 236, 255];
+  var RING_FILLS = LOOK < 2 ? ["#8a93a8", "#4e5568"] : ["#6e7686", "#3e4453"];
+  var RING_RGB = LOOK < 2 ? [[138, 147, 168], [78, 85, 104]] : [[110, 118, 134], [62, 68, 83]], RING_BRIGHT = [226, 236, 255];
   // A beat joins the ring as a breath: its letters leave one after the
   // other (RING_LETTER_MS apart, the whole stream never longer than
   // RING_STREAM_MS), and each takes RING_BREATH_MS to arrive.
@@ -3425,9 +3347,7 @@
   // function for the page and the video, so they breathe the same.
   function ringBreath(q) {
     var e = 1 - Math.pow(1 - q, 3), u = 1 - e, o = clamp(q * 2.4);
-    // Start outside the ring (sc > 1), swung well behind its place,
-    // and spiral in: the word flies in and wraps around.
-    return {a: o * o, lag: 1.6 * u * u, sc: 1 + 0.3 * u,
+    return {a: o * o, lag: 1.25 * u * u, sc: 1 - 0.1 * u,
             glow: u * u, mix: e};
   }
   // --- look 2: the words fly to the ring ---
@@ -3612,112 +3532,42 @@
     if (truncated && list.length)
       list[list.length - 1].word =
         list[list.length - 1].word + "\u2026";
-    // After the prime directive (or the finish) the record is laid out
-    // EVENly: words fill the three rings in proportion to their length,
-    // each ring justified so the gaps are equal all the way round.
-    // While the build runs, letters pack in sequence as before.
-    var even = RING_EVEN_FORCE || beats.some(function (bt) { return bt.beat === "prime-directive"; });
-    var placements = [], beatLetter = {};
-    function mk(chr, ring, center, lb, wi, ci, nch, fsz) {
-      center = ((center % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
-      var lgi = beatLetter[lb] || 0;
-      beatLetter[lb] = lgi + 1;
-      var deg = center * 180 / Math.PI, flipped = deg > 90 && deg < 270;
-      placements.push({ch: chr, ring: ring, angle: center, b: lb, gi: lgi,
-                       wi: wi, ci: ci, nch: nch,
-                       rotation: flipped ? deg - 180 : deg,
-                       skew: flipped ? -RING_SKEW_DEG : RING_SKEW_DEG,
-                       fill: RING_FILLS[ring], fontSize: fsz});
-    }
-    function evenPlace() {
-      var nR = RING_RADII.length, caps = [], capSum = 0, r, f, i, c;
-      for (r = 0; r < nR; r++) { caps.push(2 * Math.PI * RING_RADII[r]); capSum += caps[r]; }
-      for (f = RING_EVEN_MAX; f >= RING_FONT_FLOOR - 1e-6; f -= 0.25) {
-        var items = [], idx = 0, tot = 0;
-        for (i = 0; i < list.length; i++) {
-          var chs = list[i].word.split(""), ws = [], sw = 0;
-          for (c = 0; c < chs.length; c++) { var wv = measure(chs[c], f, idx++); ws.push(wv); sw += wv; }
-          var g = gapAfter(list, i, f);
-          items.push({i: i, ws: ws, w: sw, g: g}); tot += sw + g;
+    var placements = [], ring = 0, angle = 0, idx = 0, beatLetter = {};
+    for (var i = 0; i < list.length; i++) {
+      var chars = list[i].word.split("");
+      for (var c = 0; c < chars.length; c++) {
+        var w = measure(chars[c], fontSize, idx);
+        idx++;
+        var lastChar = c === chars.length - 1;
+        var lb = list[i].beat, lgi = beatLetter[lb] || 0;
+        beatLetter[lb] = lgi + 1;
+        var gap = lastChar ? gapAfter(list, i, fontSize) : 0;
+        var span = (w + gap) / RING_RADII[ring];
+        if (angle + span > 2 * Math.PI && ring + 1 < RING_RADII.length) {
+          ring++;
+          angle = 0;
+          span = (w + gap) / RING_RADII[ring];
         }
-        // cut the words into rings by each ring's share of the total
-        var rings = [[]], used = 0, ri = 0, tgt = caps[0] * tot / capSum;
-        for (i = 0; i < items.length; i++) {
-          var len = items[i].w + items[i].g;
-          if (ri + 1 < nR && rings[ri].length && used + len / 2 > tgt) {
-            ri++; rings.push([]); used = 0; tgt = caps[ri] * tot / capSum;
-          }
-          rings[ri].push(items[i]); used += len;
-        }
-        var ok = true;
-        for (r = 0; r < rings.length; r++) {
-          var sW = 0, sG = 0;
-          for (i = 0; i < rings[r].length; i++) { sW += rings[r][i].w; sG += rings[r][i].g; }
-          rings[r].sW = sW; rings[r].sG = sG;
-          if (sW + 0.55 * sG > caps[r]) { ok = false; break; }
-        }
-        if (!ok) continue;
-        var startOff = [0, 0.7, 1.4];
-        for (r = 0; r < rings.length; r++) {
-          // Spread the slack evenly: word gaps first (up to 2.2x their
-          // normal size), then a little tracking between letters, then
-          // whatever is left back into the gaps.
-          var nL = 0, sGr = rings[r].sG || 1;
-          for (i = 0; i < rings[r].length; i++) nL += rings[r][i].ws.length;
-          var k = Math.min(2.2, (caps[r] - rings[r].sW) / sGr);
-          var rem = caps[r] - rings[r].sW - k * sGr;
-          var tr = rem > 0 ? Math.min(1.2 * f, rem / nL) : 0;
-          rem -= tr * nL;
-          if (rem > 0) k += rem / sGr;
-          var ang = startOff[r] || 0;
-          for (i = 0; i < rings[r].length; i++) {
-            var it = rings[r][i], wd = list[it.i];
-            var nch = it.ws.length;
-            for (c = 0; c < nch; c++) {
-              var wl = it.ws[c];
-              mk(wd.word.charAt(c), r, ang + ((wl + tr) / RING_RADII[r]) / 2, wd.beat, wd.wi, c, nch, f);
-              ang += (wl + tr) / RING_RADII[r];
-            }
-            ang += k * it.g / RING_RADII[r];
-          }
-        }
-        fontSize = f;
-        return true;
-      }
-      return false;
-    }
-    function seqPlace() {
-      var ring = 0, angle = 0, idx = 0;
-      for (var i = 0; i < list.length; i++) {
-        var chars = list[i].word.split("");
-        for (var c = 0; c < chars.length; c++) {
-          var w = measure(chars[c], fontSize, idx);
-          idx++;
-          var lastChar = c === chars.length - 1;
-          var gap = lastChar ? gapAfter(list, i, fontSize) : 0;
-          var span = (w + gap) / RING_RADII[ring];
-          if (angle + span > 2 * Math.PI && ring + 1 < RING_RADII.length) {
-            ring++;
-            angle = 0;
-            span = (w + gap) / RING_RADII[ring];
-          }
-          mk(chars[c], ring, angle + (w / RING_RADII[ring]) / 2, list[i].beat,
-             list[i].wi, c, chars.length, fontSize);
-          angle += span;
-        }
+        var center = angle + (w / RING_RADII[ring]) / 2;
+        var deg = center * 180 / Math.PI;
+        var flipped = deg > 90 && deg < 270;
+        placements.push({ch: chars[c], ring: ring, angle: center, b: lb, gi: lgi,
+                         wi: list[i].wi, ci: c, nch: chars.length,
+                         rotation: flipped ? deg - 180 : deg,
+                         skew: flipped ? -RING_SKEW_DEG : RING_SKEW_DEG,
+                         fill: RING_FILLS[ring],
+                         fontSize: fontSize});
+        angle += span;
       }
     }
-    var usedEven = even && evenPlace();
-    if (!usedEven) { placements = []; beatLetter = {}; seqPlace(); }
-    return {fontSize: fontSize, truncated: truncated, even: usedEven,
-            nBeats: beats.length,
+    return {fontSize: fontSize, truncated: truncated,
             placements: placements, beatLetters: beatLetter};
   }
   var ringBeats = [];
   function ringEstimate(word, fontSize) {
     // One letter's width: the layout measures letters now,
     // so the estimate is per letter, not per word.
-    return 0.6 * fontSize;
+    return 0.52 * fontSize;
   }
   function placeRing() {
     // Place from estimates, measure the real letters, place
@@ -3725,30 +3575,19 @@
     var lay = ringLayout(ringBeats, ringEstimate);
     ringDraw(lay);
     var els = ringGroup.querySelectorAll("text");
-    var unit = {};
+    var widths = [];
     for (var i = 0; i < els.length; i++) {
-      var pl = lay.placements[i], wv;
-      try { wv = els[i].getComputedTextLength(); } catch (e) { wv = 0; }
-      if (wv > 0 && pl) unit[pl.ch] = wv / pl.fontSize;
+      try { widths.push(els[i].getComputedTextLength()); }
+      catch (e) { widths.push(ringEstimate(lay.placements[i].ch,
+                                           lay.fontSize)); }
     }
-    lay = ringLayout(ringBeats, function (ch, fontSize) {
-      var u = unit[ch];
-      return u !== undefined ? u * fontSize * RING_STRETCH_X + 0.05 * fontSize
-                             : ringEstimate(ch, fontSize);
+    lay = ringLayout(ringBeats, function (word, fontSize, idx) {
+      return widths[idx] !== undefined ? widths[idx]
+        : ringEstimate(word, fontSize);
     });
     ringDraw(lay);
   }
   function ringDraw(lay) {
-    // The layout goes even: the old ring fades out where it stood as the
-    // new one fades in where it settles, so nothing jumps.
-    if (lay.even && lay.nBeats !== ringEvenBeats && ringGroup.firstChild && LOOK >= 2) {
-      if (ringGhost && ringGhost.parentNode) ringGhost.parentNode.removeChild(ringGhost);
-      ringGhost = ringGroup.cloneNode(true);
-      ringGhost.removeAttribute("id");
-      ringGroup.parentNode.insertBefore(ringGhost, ringGroup);
-      ringSettleT0 = NOW();
-    }
-    if (lay.even) ringEvenBeats = lay.nBeats;
     ringGroup.textContent = "";
     flyGroup.textContent = "";
     for (var i = 0; i < lay.placements.length; i++) {
@@ -3857,9 +3696,6 @@
     placeRing();
   }
   function clearRing() {
-    RING_EVEN_FORCE = false; ringEvenBeats = -1; ringSettleT0 = -1e9;
-    if (ringGhost && ringGhost.parentNode) ringGhost.parentNode.removeChild(ringGhost);
-    ringGhost = null;
     ringBeats = [];
     ringGroup.textContent = "";
     flyGroup.textContent = "";
@@ -3873,11 +3709,6 @@
     // gathers it into the ring; then the seed line joins the
     // record, once.
     if (voiceText) addRingBeat(voiceText, voiceBeat);
-    // The finish evens the record out, unless the prime directive is
-    // still to drop (its landing does the same).
-    if (LOOK >= 2 && !PRIME && !RING_EVEN_FORCE && ringBeats.length) {
-      RING_EVEN_FORCE = true; placeRing();
-    }
     if (seed && !seedShown) {
       seedShown = true;
       var row = document.createElement("div");
@@ -4122,7 +3953,7 @@
       voiceStartAt = NOW(); voiceWordCount = words.length; lastWordIdx = -1;
       attHold = false;              // the anticipation is answered
     };
-    if (line.childNodes.length && !REDUCED && LOOK < 2) {
+    if (line.childNodes.length && !REDUCED) {
       // The old line dissolves word by word, first word first, and
       // the next line waits until the last word is gone.
       var n = line.querySelectorAll(".w").length;
@@ -4234,7 +4065,6 @@
       return;
     }
     if (voiceSpeed <= 1.5) speakBeat(text, function () {});
-    if (LOOK >= 2) addRingBeat(text, beat);   // flies in at once, unprinted
     say(v.text, v.label || "");
     if (!v.final) {
       voiceTimer = setTimeout(function () {
@@ -4886,7 +4716,7 @@
         function (ch, fontSize) {
           ctx.font = "italic 300 " + (fontSize * 1.55).toFixed(1) +
             "px " + RING_FONT;
-          return ctx.measureText(ch).width / 1.55 * RING_STRETCH_X + 0.05 * fontSize;
+          return ctx.measureText(ch).width / 1.55;
         });
       exportRingCount = exportGathered.length;
     }
@@ -5641,7 +5471,7 @@
 (function () {
   var PS = window.PsychSeal;
   if (!PS) return;
-  var down = false, lastTap = 0, gyro = false;
+  var down = false, gyro = false;
   function pinching() { return !!(PS.pinching && PS.pinching()); }
   function norm(e) {
     var w = window.innerWidth, h = window.innerHeight;
@@ -5671,9 +5501,6 @@
     if (e.target && e.target.id === "seal-share") return;
     if (pinching()) return;
     down = true; var n = norm(e); PS.aim(n[0], n[1], 1e9); inhaleSoon();
-    var now = Date.now();
-    if (now - lastTap < 320 && window.PsychSealReplay) window.PsychSealReplay();
-    lastTap = now;
     startGyro();
   });
   document.addEventListener("pointermove", function (e) {
@@ -5803,6 +5630,27 @@
       ensureBar().appendChild(a);
       setTimeout(function () { a.style.opacity = "0.55"; }, 2500);
     }).catch(function () {});
+  } catch (err) {}
+  // The reinstall: when this seal was opened before and the
+  // server holds a newer build, a Reinstall button appears.
+  // One tap reloads onto the new build. No uninstall dance.
+  try {
+    if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
+      navigator.serviceWorker.getRegistration().then(function (reg) {
+        if (!reg) return;
+        reg.addEventListener("updatefound", function () {
+          var nw = reg.installing;
+          if (!nw) return;
+          nw.addEventListener("statechange", function () {
+            if (nw.state === "activated") {
+              var btn = keepBtn("Reinstall");
+              btn.addEventListener("click", function () { location.reload(); });
+            }
+          });
+        });
+        try { var p = reg.update(); if (p && p.catch) p.catch(function () {}); } catch (e) {}
+      }).catch(function () {});
+    }
   } catch (err) {}
 })();
 </script>
